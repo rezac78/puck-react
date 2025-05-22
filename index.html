@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React + TS</title>
+    <script>
+      const data = JSON.parse(localStorage.getItem("puck-data") || "{}");
+      const props = data?.content?.[0]?.props || {};
+      console.log(data)
+      document.documentElement.style.setProperty("--bg-color", props.backgroundColor || "#f0f4f8");
+      document.documentElement.style.setProperty("--font", props.fontFamily || "Inter, sans-serif");
+      window.addEventListener("DOMContentLoaded", () => {
+        const body = document.body;
+
+        body.style.backgroundColor = props.backgroundColor || "#f0f4f8";
+        body.style.fontFamily = props.fontFamily || "Inter, sans-serif";
+
+        const bgImage = props.backgroundImage || "";
+        const bgGradient = props.backgroundGradient || "";
+
+        if (bgImage && bgGradient) {
+          body.style.backgroundImage = `${bgGradient}, url(${bgImage})`;
+        } else if (bgGradient) {
+          body.style.backgroundImage = bgGradient;
+        } else if (bgImage) {
+          body.style.backgroundImage = `url(${bgImage})`;
+        } else {
+          body.style.backgroundImage = "none";
+        }
+
+        body.style.backgroundPosition = props.backgroundPosition || "center";
+        body.style.backgroundRepeat = props.backgroundRepeat || "no-repeat";
+        body.style.backgroundSize = props.backgroundSize || "cover";
+        body.style.backgroundAttachment = props.backgroundAttachment || "fixed";
+      });
+    </script>
+
+    <style>
+      body {
+        background:var(--bg-color);
+        font-family:var(--font);
+
+      }
+    </style>
+  </head>
+  <body >
+    <div  id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+@import "../node_modules/@measured/puck/dist/style.css";
+@import "tailwindcss";
+/* Plugins */
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
