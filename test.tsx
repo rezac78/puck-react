@@ -3,10 +3,12 @@ import {DropZone, type Config} from "@measured/puck";
 type Props = {
  HeadingBlock: {
   title: string;
-  responsiveFontSize: string;
-  responsivePadding: string;
-  responsiveMargin: string;
+  fontSize: "xs" | "s" | "m" | "l" | "xl" | "xxl" | "xxxl";
   align: "left" | "center" | "right";
+  paddingY: number;
+  marginY: number;
+  paddingX: number;
+  marginX: number;
   color: string;
   fontWeight: "normal" | "bold" | "semibold" | "italic" | "lighter";
   backgroundColor: string;
@@ -14,11 +16,11 @@ type Props = {
  };
  TextBlock: {
   text: string;
+  fontSize: "xs" | "s" | "m" | "l" | "xl" | "xxl" | "xxxl";
   align: "left" | "center" | "right";
   color: string;
-  responsiveFontSize: string;
-  responsivePadding: string;
-  responsiveMargin: string;
+  paddingY: number;
+  paddingX: number;
   backgroundColor: string;
   fontWeight: "normal" | "bold" | "semibold" | "italic" | "lighter";
   lineHeight: number;
@@ -33,7 +35,7 @@ type Props = {
   objectFit: "cover" | "contain";
  };
  Space: {
-  responsiveHeight: string;
+  height: number;
  };
  Button: {
   text: string;
@@ -71,6 +73,23 @@ type Props = {
   gap: number;
  };
 };
+
+const fontSizeMap: Record<Props["HeadingBlock"]["fontSize"], string> = {
+ xs: "12px",
+ s: "14px",
+ m: "16px",
+ l: "20px",
+ xl: "24px",
+ xxl: "32px",
+ xxxl: "48px",
+};
+const fontWeightMap: Record<Props["HeadingBlock"]["fontWeight"], string> = {
+ normal: "normal",
+ bold: "bold",
+ semibold: "600",
+ italic: "italic",
+ lighter: "lighter",
+};
 const buttonFontSizeMap: Record<Props["Button"]["fontSize"], string> = {
  xs: "12px",
  s: "14px",
@@ -78,12 +97,24 @@ const buttonFontSizeMap: Record<Props["Button"]["fontSize"], string> = {
  l: "20px",
  xl: "24px",
 };
-
 export const config: Config<Props> = {
  components: {
   HeadingBlock: {
    fields: {
     title: {type: "text", label: "عنوان"},
+    fontSize: {
+     type: "select",
+     label: "اندازه فونت",
+     options: [
+      {label: "XS", value: "xs"},
+      {label: "S", value: "s"},
+      {label: "M", value: "m"},
+      {label: "L", value: "l"},
+      {label: "XL", value: "xl"},
+      {label: "XXL", value: "xxl"},
+      {label: "XXXL", value: "xxxl"},
+     ],
+    },
     align: {
      type: "select",
      label: "چیدمان متن",
@@ -92,6 +123,22 @@ export const config: Config<Props> = {
       {label: "وسط", value: "center"},
       {label: "راست", value: "right"},
      ],
+    },
+    paddingX: {
+     type: "number",
+     label: "فاصله از چپ و راست درون (px)",
+    },
+    paddingY: {
+     type: "number",
+     label: "فاصله از بالا و پایین درون (px)",
+    },
+    marginX: {
+     type: "number",
+     label: "فاصله از چپ و راست بیرون (px)",
+    },
+    marginY: {
+     type: "number",
+     label: "فاصله از بالا و پایین بیرون (px)",
     },
     color: {
      type: "text",
@@ -112,18 +159,6 @@ export const config: Config<Props> = {
       {label: "Lighter", value: "lighter"},
      ],
     },
-    responsiveFontSize: {
-     type: "textarea",
-     label: "CSS فونت ریسپانسیو",
-    },
-    responsivePadding: {
-     type: "textarea",
-     label: "CSS پدینگ ریسپانسیو",
-    },
-    responsiveMargin: {
-     type: "textarea",
-     label: "CSS مارجین ریسپانسیو",
-    },
     lineHeight: {
      type: "number",
      label: "ارتفاع خط (line-height)",
@@ -131,107 +166,57 @@ export const config: Config<Props> = {
    },
    defaultProps: {
     title: "Heading",
+    fontSize: "m",
     align: "left",
+    paddingX: 32,
+    marginX: 16,
+    paddingY: 32,
+    marginY: 16,
     color: "#000000",
     backgroundColor: "",
     fontWeight: "normal",
     lineHeight: 1.4,
-    responsiveFontSize: `font-size: 16px;
-  @media (min-width: 640px) {
-    font-size: 20px;
-  }
-  @media (min-width: 1024px) {
-    font-size: 32px;
-  }
-    `,
-    responsivePadding: `padding: 16px 24px;
-  @media (min-width: 640px) {
-    padding: 24px 32px;
-  }
-  @media (min-width: 1024px) {
-    padding: 32px 48px;
-  }
-`,
-    responsiveMargin: `margin: 16px 8px;
-  @media (min-width: 640px) {
-    margin: 24px 16px;
-  }
-  @media (min-width: 1024px) {
-    margin: 32px 24px;
-  }
-`,
    },
    render: ({
     title,
+    fontSize,
     align,
+    paddingX,
+    marginX,
+    paddingY,
+    marginY,
     color,
-    backgroundColor,
     fontWeight,
+    backgroundColor,
     lineHeight,
-    responsiveFontSize,
-    responsivePadding,
-    responsiveMargin,
-   }) => {
-    const fontWeightMap = {
-     normal: "normal",
-     bold: "bold",
-     semibold: "600",
-     italic: "italic",
-     lighter: "lighter",
-    };
-
-    const textAlign = {
-     left: "left",
-     center: "center",
-     right: "right",
-    }[align];
-
-    return (
-     <div
+   }) => (
+    <div
+     style={{
+      paddingLeft: paddingX,
+      paddingRight: paddingX,
+      paddingTop: paddingY,
+      paddingBottom: paddingY,
+      marginLeft: marginX,
+      marginRight: marginX,
+      marginTop: marginY,
+      marginBottom: marginY,
+      textAlign: align,
+     }}
+    >
+     <h1
       style={{
-       textAlign: textAlign as "left" | "center" | "right",
+       fontSize: fontSizeMap[fontSize],
+       color: color,
+       backgroundColor: backgroundColor,
+       fontWeight: fontWeightMap[fontWeight],
+       fontStyle: fontWeight === "italic" ? "italic" : "normal",
+       lineHeight: lineHeight,
       }}
      >
-      <style>
-       {`
-            .custom-heading {
-                ${responsiveFontSize}
-                ${responsivePadding}
-                ${responsiveMargin}
-              }
-
-            @media (min-width: 640px) {
-              .custom-heading {
-                ${responsiveFontSize}
-                ${responsivePadding}
-                ${responsiveMargin}
-              }
-            }
-
-            @media (min-width: 1024px) {
-              .custom-heading {
-                ${responsiveFontSize}
-                ${responsivePadding}
-                ${responsiveMargin}
-              }
-            }
-          `}
-      </style>
-      <h1
-       className="custom-heading"
-       style={{
-        color,
-        backgroundColor,
-        fontWeight: fontWeightMap[fontWeight],
-        fontStyle: fontWeight === "italic" ? "italic" : "normal",
-        lineHeight,
-       }}
-      >
-       {title}
-      </h1>
-     </div>
-    );
-   },
+      {title}
+     </h1>
+    </div>
+   ),
   },
   TextBlock: {
    fields: {
@@ -239,17 +224,26 @@ export const config: Config<Props> = {
      type: "textarea",
      label: "متن پاراگراف",
     },
-    responsiveFontSize: {
-     type: "textarea",
-     label: "CSS فونت ریسپانسیو",
+    fontSize: {
+     type: "select",
+     label: "اندازه فونت",
+     options: [
+      {label: "XS", value: "xs"},
+      {label: "S", value: "s"},
+      {label: "M", value: "m"},
+      {label: "L", value: "l"},
+      {label: "XL", value: "xl"},
+      {label: "XXL", value: "xxl"},
+      {label: "XXXL", value: "xxxl"},
+     ],
     },
-    responsivePadding: {
-     type: "textarea",
-     label: "CSS پدینگ ریسپانسیو",
+    paddingX: {
+     type: "number",
+     label: "فاصله از چپ و راست درون (px)",
     },
-    responsiveMargin: {
-     type: "textarea",
-     label: "CSS مارجین ریسپانسیو",
+    paddingY: {
+     type: "number",
+     label: "فاصله از بالا و پایین درون (px)",
     },
     align: {
      type: "select",
@@ -286,107 +280,33 @@ export const config: Config<Props> = {
    },
    defaultProps: {
     text: "اینجا متن پاراگراف قرار می‌گیرد.",
+    fontSize: "m",
     align: "left",
+    paddingX: 0,
+    paddingY: 0,
     color: "#000000",
     backgroundColor: "",
     fontWeight: "normal",
     lineHeight: 1.4,
-    responsiveFontSize: `font-size: 16px;
-  @media (min-width: 640px) {
-    font-size: 20px;
-  }
-  @media (min-width: 1024px) {
-    font-size: 32px;
-  }
-    `,
-    responsivePadding: `padding: 16px 24px;
-  @media (min-width: 640px) {
-    padding: 24px 32px;
-  }
-  @media (min-width: 1024px) {
-    padding: 32px 48px;
-  }
-`,
-    responsiveMargin: `margin: 16px 8px;
-  @media (min-width: 640px) {
-    margin: 24px 16px;
-  }
-  @media (min-width: 1024px) {
-    margin: 32px 24px;
-  }
-`,
    },
-   render: ({
-    text,
-    align,
-    color,
-    backgroundColor,
-    fontWeight,
-    lineHeight,
-    responsiveFontSize,
-    responsivePadding,
-    responsiveMargin,
-   }) => {
-    const fontWeightMap = {
-     normal: "normal",
-     bold: "bold",
-     semibold: "600",
-     italic: "italic",
-     lighter: "lighter",
-    };
-
-    const textAlign = {
-     left: "left",
-     center: "center",
-     right: "right",
-    }[align];
-
-    return (
-     <div
-      style={{
-       textAlign: textAlign as "left" | "center" | "right",
-      }}
-     >
-      <style>
-       {`
-            .custom-paragraph {
-              ${responsiveFontSize}
-              ${responsivePadding}
-              ${responsiveMargin}
-            }
-
-            @media (min-width: 640px) {
-              .custom-paragraph {
-                ${responsiveFontSize}
-                ${responsivePadding}
-                ${responsiveMargin}
-              }
-            }
-
-            @media (min-width: 1024px) {
-              .custom-paragraph {
-                ${responsiveFontSize}
-                ${responsivePadding}
-                ${responsiveMargin}
-              }
-            }
-          `}
-      </style>
-      <p
-       className="custom-paragraph"
-       style={{
-        color,
-        backgroundColor,
-        fontWeight: fontWeightMap[fontWeight],
-        fontStyle: fontWeight === "italic" ? "italic" : "normal",
-        lineHeight,
-       }}
-      >
-       {text}
-      </p>
-     </div>
-    );
-   },
+   render: ({text, fontSize, align, color, backgroundColor, fontWeight, lineHeight, paddingX, paddingY}) => (
+    <p
+     style={{
+      fontSize: fontSizeMap[fontSize],
+      textAlign: align,
+      paddingLeft: paddingX,
+      paddingRight: paddingX,
+      paddingTop: paddingY,
+      paddingBottom: paddingY,
+      fontWeight: fontWeightMap[fontWeight],
+      color,
+      backgroundColor,
+      lineHeight: lineHeight,
+     }}
+    >
+     {text}
+    </p>
+   ),
   },
   LogoBlock: {
    fields: {
@@ -465,44 +385,15 @@ export const config: Config<Props> = {
   },
   Space: {
    fields: {
-    responsiveHeight: {
-     type: "textarea",
-     label: "CSS ارتفاع ریسپانسیو",
+    height: {
+     type: "number",
+     label: "ارتفاع فاصله (px)",
     },
    },
    defaultProps: {
-    responsiveHeight: `height: 16px;
-@media (min-width: 640px) {
-  height: 24px;
-}
-@media (min-width: 1024px) {
-  height: 32px;
-}`,
+    height: 20,
    },
-   render: ({responsiveHeight}) => (
-    <>
-     <style>
-      {`
-          .custom-space {
-            ${responsiveHeight}
-          }
-
-          @media (min-width: 640px) {
-            .custom-space {
-              ${responsiveHeight}
-            }
-          }
-
-          @media (min-width: 1024px) {
-            .custom-space {
-              ${responsiveHeight}
-            }
-          }
-        `}
-     </style>
-     <div className="custom-space" />
-    </>
-   ),
+   render: ({height}) => <div style={{height: `${height}px`}} />,
   },
   Button: {
    fields: {
