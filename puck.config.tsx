@@ -1,4 +1,5 @@
 import {DropZone, type Config} from "@measured/puck";
+import React from "react";
 
 type Props = {
  HeadingBlock: {
@@ -57,6 +58,7 @@ type Props = {
   backgroundSize: string;
   backgroundAttachment: string;
   backgroundGradient: string;
+  mobileFixedWidth: boolean;
  };
  GridBlock: {
   columns: string;
@@ -69,6 +71,35 @@ type Props = {
   justify: "start" | "center" | "end" | "space-between" | "space-around";
   align: "start" | "center" | "end" | "stretch";
   gap: number;
+ };
+ InputBlock: {
+  label: string;
+  name: string;
+  placeholder: string;
+  required: boolean;
+  width: number;
+  type: string;
+  align: "left" | "center" | "right"; // ✅ اضافه کن
+ };
+ DropDownBlock: {
+  label: string;
+  name: string;
+  options: Array<{
+   label: string;
+   value: string;
+  }>;
+  width: number;
+  align: "left" | "center" | "right";
+  required: boolean;
+ };
+ TextareaBlock: {
+  label: string;
+  name: string;
+  placeholder: string;
+  required: boolean;
+  width: number;
+  rows: number;
+  align: "left" | "center" | "right";
  };
 };
 const buttonFontSizeMap: Record<Props["Button"]["fontSize"], string> = {
@@ -185,6 +216,7 @@ export const config: Config<Props> = {
      center: "center",
      right: "right",
     }[align];
+    const className = `custom-heading-${Math.random().toString(36).slice(2)}`;
 
     return (
      <div
@@ -194,14 +226,14 @@ export const config: Config<Props> = {
      >
       <style>
        {`
-            .custom-heading {
+            .${className}{
                 ${responsiveFontSize}
                 ${responsivePadding}
                 ${responsiveMargin}
               }
 
             @media (min-width: 640px) {
-              .custom-heading {
+              .${className}{
                 ${responsiveFontSize}
                 ${responsivePadding}
                 ${responsiveMargin}
@@ -209,7 +241,7 @@ export const config: Config<Props> = {
             }
 
             @media (min-width: 1024px) {
-              .custom-heading {
+              .${className}{
                 ${responsiveFontSize}
                 ${responsivePadding}
                 ${responsiveMargin}
@@ -218,7 +250,7 @@ export const config: Config<Props> = {
           `}
       </style>
       <h1
-       className="custom-heading"
+       className={className}
        style={{
         color,
         backgroundColor,
@@ -340,7 +372,7 @@ export const config: Config<Props> = {
      center: "center",
      right: "right",
     }[align];
-
+    const className = `custom-paragraph-${Math.random().toString(36).slice(2)}`;
     return (
      <div
       style={{
@@ -349,31 +381,31 @@ export const config: Config<Props> = {
      >
       <style>
        {`
-            .custom-paragraph {
+          .${className} {
+            ${responsiveFontSize}
+            ${responsivePadding}
+            ${responsiveMargin}
+          }
+
+          @media (min-width: 640px) {
+            .${className} {
               ${responsiveFontSize}
               ${responsivePadding}
               ${responsiveMargin}
             }
+          }
 
-            @media (min-width: 640px) {
-              .custom-paragraph {
-                ${responsiveFontSize}
-                ${responsivePadding}
-                ${responsiveMargin}
-              }
+          @media (min-width: 1024px) {
+            .${className} {
+              ${responsiveFontSize}
+              ${responsivePadding}
+              ${responsiveMargin}
             }
-
-            @media (min-width: 1024px) {
-              .custom-paragraph {
-                ${responsiveFontSize}
-                ${responsivePadding}
-                ${responsiveMargin}
-              }
-            }
-          `}
+          }
+        `}
       </style>
       <p
-       className="custom-paragraph"
+       className={className}
        style={{
         color,
         backgroundColor,
@@ -472,37 +504,38 @@ export const config: Config<Props> = {
    },
    defaultProps: {
     responsiveHeight: `height: 16px;
-@media (min-width: 640px) {
-  height: 24px;
-}
-@media (min-width: 1024px) {
-  height: 32px;
-}`,
+        @media (min-width: 640px) {
+          height: 24px;
+        }
+        @media (min-width: 1024px) {
+          height: 32px;
+        }`,
    },
-   render: ({responsiveHeight}) => (
-    <>
-     <style>
-      {`
-          .custom-space {
-            ${responsiveHeight}
-          }
-
-          @media (min-width: 640px) {
-            .custom-space {
-              ${responsiveHeight}
-            }
-          }
-
-          @media (min-width: 1024px) {
-            .custom-space {
-              ${responsiveHeight}
-            }
-          }
-        `}
-     </style>
-     <div className="custom-space" />
-    </>
-   ),
+   render: ({responsiveHeight}) => {
+    const className = `custom-space-${Math.random().toString(36).slice(2)}`;
+    return (
+     <>
+      <style>
+       {`
+              .${className} {
+                ${responsiveHeight}
+              }
+              @media (min-width: 640px) {
+                .${className} {
+                  ${responsiveHeight}
+                }
+              }
+              @media (min-width: 1024px) {
+                .${className} {
+                  ${responsiveHeight}
+                }
+              }
+            `}
+      </style>
+      <div className={className} />
+     </>
+    );
+   },
   },
   Button: {
    fields: {
@@ -744,7 +777,254 @@ export const config: Config<Props> = {
     );
    },
   },
+  InputBlock: {
+   fields: {
+    label: {type: "text", label: "برچسب (label)"},
+    name: {type: "text", label: "نام (name)"},
+    placeholder: {type: "text", label: "placeholder"},
+    width: {type: "number", label: "عرض (px)"},
+    type: {
+     type: "select",
+     label: "نوع ورودی (input type)",
+     options: [
+      {label: "متن", value: "text"},
+      {label: "عدد", value: "number"},
+      {label: "ایمیل", value: "email"},
+      {label: "رمز عبور", value: "password"},
+     ],
+    },
+    align: {
+     type: "select",
+     label: "چیدمان",
+     options: [
+      {label: "چپ", value: "left"},
+      {label: "وسط", value: "center"},
+      {label: "راست", value: "right"},
+     ],
+    },
+    required: {
+     type: "custom",
+     label: "اجباری است؟",
+     render: ({value, onChange}) => (
+      <label style={{display: "flex", alignItems: "center", gap: "8px", direction: "rtl"}}>
+       <input type="checkbox" checked={!!value} onChange={(e) => onChange(e.target.checked)} />
+       <span>اجباری است؟</span>
+      </label>
+     ),
+    },
+   },
+   defaultProps: {
+    label: "نام",
+    name: "name",
+    placeholder: "مثلاً علی",
+    required: false,
+    width: 300,
+    align: "right",
+    type: "text",
+   },
+   render: ({label, name, placeholder, required, width, align, type}) => {
+    if (!name) return <div style={{color: "red"}}>⚠️ نام فیلد وارد نشده</div>;
 
+    const inputAlign: "left" | "center" | "right" = align ?? "right";
+
+    return (
+     <div style={{marginBottom: "1rem", direction: "rtl", textAlign: inputAlign}}>
+      <label htmlFor={name} style={{display: "block", marginBottom: "0.5rem"}}>
+       {label}
+      </label>
+      <div>
+       <input
+        type={type}
+        id={name}
+        name={name}
+        placeholder={placeholder}
+        required={!!required}
+        style={{
+         width,
+         padding: "8px",
+         fontSize: "16px",
+         border: "1px solid #ccc",
+         borderRadius: "4px",
+         display: "inline-block",
+        }}
+       />
+      </div>
+      {required && (
+       <div style={{marginTop: "4px"}}>
+        <small style={{color: "#999", fontSize: "12px"}}>پر کردن این فیلد الزامی است</small>
+       </div>
+      )}
+     </div>
+    );
+   },
+  },
+  DropDownBlock: {
+   fields: {
+    label: {type: "text", label: "برچسب (label)"},
+    name: {type: "text", label: "نام (name)"},
+    options: {
+     type: "array",
+     label: "گزینه‌ها",
+     arrayFields: {
+      label: {type: "text", label: "نمایش گزینه"},
+      value: {type: "text", label: "مقدار گزینه"},
+     },
+     defaultItemProps: {
+      label: "",
+      value: "",
+     },
+     min: 0,
+    },
+    width: {type: "number", label: "عرض (px)"},
+    align: {
+     type: "select",
+     label: "چیدمان",
+     options: [
+      {label: "چپ", value: "left"},
+      {label: "وسط", value: "center"},
+      {label: "راست", value: "right"},
+     ],
+    },
+    required: {
+     type: "custom",
+     label: "اجباری است؟",
+     render: ({value, onChange}) => (
+      <label style={{display: "flex", alignItems: "center", gap: 8, direction: "rtl"}}>
+       <input type="checkbox" checked={!!value} onChange={(e) => onChange(e.currentTarget.checked)} />
+       <span>اجباری است؟</span>
+      </label>
+     ),
+    },
+   },
+   defaultProps: {
+    label: "انتخاب کنید",
+    name: "dropdown",
+    options: [
+     {label: "گزینه ۱", value: "1"},
+     {label: "گزینه ۲", value: "2"},
+    ],
+    width: 300,
+    align: "right",
+    required: false,
+   },
+   render: ({label, name, options, required, width, align}) => {
+    if (!name) return <div style={{color: "red"}}>⚠️ نام فیلد وارد نشده</div>;
+
+    const selectAlign: "left" | "center" | "right" = align ?? "right";
+
+    return (
+     <div style={{marginBottom: "1rem", direction: "rtl"}}>
+      <label htmlFor={name} style={{display: "block", marginBottom: "0.5rem"}}>
+       {label}
+      </label>
+      <div style={{textAlign: selectAlign}}>
+       <select
+        id={name}
+        name={name}
+        required={!!required}
+        defaultValue=""
+        style={{
+         width,
+         padding: "8px",
+         fontSize: "16px",
+         border: "1px solid #ccc",
+         borderRadius: "4px",
+         display: "inline-block",
+        }}
+       >
+        <option value="" disabled hidden>
+         انتخاب کنید...
+        </option>
+        {options?.map((opt, idx) => (
+         <option key={idx} value={opt.value}>
+          {opt.label}
+         </option>
+        ))}
+       </select>
+      </div>
+      {required && (
+       <div style={{marginTop: "4px"}}>
+        <small style={{color: "#999", fontSize: "12px"}}>انتخاب این فیلد الزامی است</small>
+       </div>
+      )}
+     </div>
+    );
+   },
+  },
+  TextareaBlock: {
+   fields: {
+    label: {type: "text", label: "برچسب (label)"},
+    name: {type: "text", label: "نام (name)"},
+    placeholder: {type: "text", label: "placeholder"},
+    width: {type: "number", label: "عرض (px)"},
+    rows: {type: "number", label: "تعداد سطرها"},
+    align: {
+     type: "select",
+     label: "چیدمان",
+     options: [
+      {label: "چپ", value: "left"},
+      {label: "وسط", value: "center"},
+      {label: "راست", value: "right"},
+     ],
+    },
+    required: {
+     type: "custom",
+     label: "اجباری است؟",
+     render: ({value, onChange}) => (
+      <label style={{display: "flex", alignItems: "center", gap: 8, direction: "rtl"}}>
+       <input type="checkbox" checked={!!value} onChange={(e) => onChange(e.currentTarget.checked)} />
+       <span>اجباری است؟</span>
+      </label>
+     ),
+    },
+   },
+   defaultProps: {
+    label: "متن توضیحی",
+    name: "textarea",
+    placeholder: "توضیحات را اینجا بنویسید...",
+    required: false,
+    width: 400,
+    rows: 4,
+    align: "right",
+   },
+   render: ({label, name, placeholder, required, width, rows, align}) => {
+    if (!name) return <div style={{color: "red"}}>⚠️ نام فیلد وارد نشده</div>;
+
+    const alignMap: Record<string, "left" | "center" | "right"> = {
+     left: "left",
+     center: "center",
+     right: "right",
+    };
+
+    return (
+     <div style={{marginBottom: "1rem", direction: "rtl", textAlign: alignMap[align]}}>
+      <label htmlFor={name} style={{display: "block", marginBottom: "0.5rem"}}>
+       {label}
+      </label>
+      <textarea
+       id={name}
+       name={name}
+       placeholder={placeholder}
+       required={!!required}
+       rows={rows}
+       style={{
+        width,
+        padding: "8px",
+        fontSize: "16px",
+        border: "1px solid #ccc",
+        borderRadius: "4px",
+        display: "inline-block",
+       }}
+      />
+      {required && (
+       <div style={{marginTop: "4px"}}>
+        <small style={{color: "#999", fontSize: "12px"}}>پر کردن این فیلد الزامی است</small>
+       </div>
+      )}
+     </div>
+    );
+   },
+  },
   GlobalSettings: {
    fields: {
     backgroundImage: {type: "text", label: "عکس بک گراند"},
@@ -756,6 +1036,16 @@ export const config: Config<Props> = {
       {label: "Yekan", value: "YekanBakhFaNum, sans-serif"},
       {label: "Peyda", value: "PeydaWeb, sans-serif"},
      ],
+    },
+    mobileFixedWidth: {
+     type: "custom",
+     label: "فقط حالت موبایل؟ (عرض ثابت ۴۲۰px)",
+     render: ({value, onChange}) => (
+      <label style={{display: "flex", alignItems: "center", gap: 8, direction: "rtl"}}>
+       <input type="checkbox" checked={!!value} onChange={(e) => onChange(e.currentTarget.checked)} />
+       <span>فعال کردن حالت موبایل</span>
+      </label>
+     ),
     },
     backgroundPosition: {
      type: "select",
@@ -813,6 +1103,7 @@ export const config: Config<Props> = {
     backgroundSize: "cover",
     backgroundAttachment: "fixed",
     backgroundGradient: "",
+    mobileFixedWidth: false,
    },
    render: () => <div style={{display: "none"}} />,
   },
