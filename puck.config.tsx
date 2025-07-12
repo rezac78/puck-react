@@ -65,6 +65,10 @@ type Props = {
   gap: number;
   marginX: number;
   marginY: number;
+  paddingX: number;
+  paddingY: number;
+  backgroundColor: string;
+  backgroundImage: string;
  };
  FlexBlock: {
   direction: "row" | "column";
@@ -693,20 +697,26 @@ export const config: Config<Props> = {
      type: "number",
      label: "فاصله عمودی بیرونی (px)",
     },
+    paddingX: {type: "number", label: "پدینگ افقی داخلی (px)"},
+    paddingY: {type: "number", label: "پدینگ عمودی داخلی (px)"},
+    backgroundColor: {type: "text", label: "رنگ پس‌زمینه"},
+    backgroundImage: {type: "text", label: "آدرس تصویر پس‌زمینه (URL)"},
    },
    defaultProps: {
     columns: "3",
     gap: 16,
     marginX: 0,
     marginY: 0,
+    paddingX: 0,
+    paddingY: 0,
+    backgroundColor: "",
+    backgroundImage: "",
    },
-   render: ({columns, gap, marginX, marginY}) => {
+   render: ({columns, gap, marginX, marginY, paddingX, paddingY, backgroundColor, backgroundImage}) => {
     return (
      <DropZone
       zone="my-grid"
-      className={`
-             grid
-           `}
+      className="grid"
       style={{
        gridTemplateColumns: `repeat(${columns}, 1fr)`,
        gap: `${gap}px`,
@@ -714,6 +724,14 @@ export const config: Config<Props> = {
        marginRight: `${marginX}px`,
        marginTop: `${marginY}px`,
        marginBottom: `${marginY}px`,
+       paddingLeft: `${paddingX}px`,
+       paddingRight: `${paddingX}px`,
+       paddingTop: `${paddingY}px`,
+       paddingBottom: `${paddingY}px`,
+       backgroundColor: backgroundColor || undefined,
+       backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
+       backgroundRepeat: "no-repeat",
+       backgroundSize: "cover",
       }}
      />
     );
